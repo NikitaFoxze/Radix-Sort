@@ -335,7 +335,7 @@ int main() {
 
 			char filename[100];
 			printf("Введите имя файла для чтения (например, input.csv): ");
-			scanf_s("%s", filename);
+			scanf("%s", filename);
 
 			if (array != NULL) free(array);
 			array = readCSV(filename, &size);
@@ -395,7 +395,7 @@ int main() {
 
 			char filename[100];
 			printf("Введите имя файла для сохранения (например, data.csv): ");
-			scanf_s("%s", filename);
+			scanf("%s", filename);
 
 			writeCSV(filename, array, size);
 			printf("Массив успешно сохранен в файл %s\n", filename);
