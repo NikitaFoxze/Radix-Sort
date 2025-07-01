@@ -1,12 +1,13 @@
-#define _CRT_SECURE_NO_WARNINGS
+п»ї#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <locale.h>
 #include <stdlib.h>
 #include <time.h>
 #include <conio.h>
 #include <limits.h>
+#include <string.h>
 
-// Функция для получения максимального элемента массива
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РјР°РєСЃРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р° РјР°СЃСЃРёРІР°
 int getMax(int arr[], int n) {
 	int max = arr[0];
 	for (int i = 1; i < n; i++) {
@@ -17,35 +18,35 @@ int getMax(int arr[], int n) {
 	return max;
 }
 
-// Функция для выполнения сортировки подсчетом по разряду exp
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РІС‹РїРѕР»РЅРµРЅРёСЏ СЃРѕСЂС‚РёСЂРѕРІРєРё РїРѕРґСЃС‡РµС‚РѕРј РїРѕ СЂР°Р·СЂСЏРґСѓ exp
 void countSort(int arr[], int n, int exp, long* count) {
 	int* output = (int*)malloc(n * sizeof(int));
 	if (output == NULL) {
-		printf("Ошибка выделения памяти!\n");
+		printf("РћС€РёР±РєР° РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё!\n");
 		exit(1);
 	}
 
 	int countDigits[10] = { 0 };
 	int i;
 
-	// 1. Подсчет количества каждой цифры
+	// 1. РџРѕРґСЃС‡РµС‚ РєРѕР»РёС‡РµСЃС‚РІР° РєР°Р¶РґРѕР№ С†РёС„СЂС‹
 	for (i = 0; i < n; i++) {
-		int digit = (abs(arr[i]) / exp) % 10;  // Используем abs() для отрицательных чисел
+		int digit = (abs(arr[i]) / exp) % 10;
 		countDigits[digit]++;
 	}
 
-	// 2. Преобразование countDigits в позиции
-	for (i = 1; i < 10; i++)
+	// 2. РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ countDigits РІ РїРѕР·РёС†РёРё
+	for (i = 1; i < 10; i++) {
 		countDigits[i] += countDigits[i - 1];
+	}
 
-	// 3. Построение выходного массива
+	// 3. РџРѕСЃС‚СЂРѕРµРЅРёРµ РІС‹С…РѕРґРЅРѕРіРѕ РјР°СЃСЃРёРІР°
 	for (i = n - 1; i >= 0; i--) {
 		int digit = (abs(arr[i]) / exp) % 10;
 		int pos = --countDigits[digit];
 
-		// Проверка границ
 		if (pos < 0 || pos >= n) {
-			printf("Ошибка: выход за границы массива! pos=%d, n=%d\n", pos, n);
+			printf("РћС€РёР±РєР°: РІС‹С…РѕРґ Р·Р° РіСЂР°РЅРёС†С‹ РјР°СЃСЃРёРІР°! pos=%d, n=%d\n", pos, n);
 			free(output);
 			exit(1);
 		}
@@ -54,311 +55,363 @@ void countSort(int arr[], int n, int exp, long* count) {
 		(*count)++;
 	}
 
-	// 4. Копирование обратно в исходный массив
+	// 4. РљРѕРїРёСЂРѕРІР°РЅРёРµ РѕР±СЂР°С‚РЅРѕ РІ РёСЃС…РѕРґРЅС‹Р№ РјР°СЃСЃРёРІ
 	for (i = 0; i < n; i++) {
 		arr[i] = output[i];
 	}
 	free(output);
 }
 
-// Основная функция для реализации поразрядной сортировки
+// РћСЃРЅРѕРІРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ СЂРµР°Р»РёР·Р°С†РёРё РїРѕСЂР°Р·СЂСЏРґРЅРѕР№ СЃРѕСЂС‚РёСЂРѕРІРєРё
 void radixSort(int arr[], int n, long* count) {
-	// Находим максимальное число, чтобы знать количество разрядов
 	int m = getMax(arr, n);
-
-	// Выполняем сортировку подсчетом для каждого разряда
 	for (int exp = 1; m / exp > 0; exp *= 10) {
 		countSort(arr, n, exp, count);
 	}
 }
 
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ Р·Р°РїРёСЃРё РјР°СЃСЃРёРІР° РІ CSV С„Р°Р№Р»
+void writeCSV(const char* filename, int arr[], int n) {
+	FILE* file = fopen(filename, "w");
+	if (file == NULL) {
+		printf("РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р° %s РґР»СЏ Р·Р°РїРёСЃРё!\n", filename);
+		return;
+	}
+
+	for (int i = 0; i < n; i++) {
+		fprintf(file, "%d", arr[i]);
+		if (i < n - 1) fprintf(file, ",");
+	}
+
+	fclose(file);
+}
+
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ С‡С‚РµРЅРёСЏ РјР°СЃСЃРёРІР° РёР· CSV С„Р°Р№Р»Р°
+int* readCSV(const char* filename, int* size) {
+	FILE* file = fopen(filename, "r");
+	if (file == NULL) {
+		printf("РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р° %s РґР»СЏ С‡С‚РµРЅРёСЏ!\n", filename);
+		return NULL;
+	}
+
+	// РџРѕРґСЃС‡РµС‚ РєРѕР»РёС‡РµСЃС‚РІР° С‡РёСЃРµР» РІ С„Р°Р№Р»Рµ
+	int count = 0;
+	char ch;
+	while ((ch = fgetc(file)) != EOF) {
+		if (ch == ',') count++;
+	}
+	count++; // РџРѕСЃР»РµРґРЅРµРµ С‡РёСЃР»Рѕ Р±РµР· Р·Р°РїСЏС‚РѕР№
+	rewind(file);
+
+	// Р’С‹РґРµР»РµРЅРёРµ РїР°РјСЏС‚Рё
+	int* arr = (int*)malloc(count * sizeof(int));
+	if (arr == NULL) {
+		printf("РћС€РёР±РєР° РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё!\n");
+		fclose(file);
+		return NULL;
+	}
+
+	// Р§С‚РµРЅРёРµ С‡РёСЃРµР»
+	for (int i = 0; i < count; i++) {
+		if (fscanf(file, "%d,", &arr[i]) != 1) {
+			printf("РћС€РёР±РєР° С‡С‚РµРЅРёСЏ РґР°РЅРЅС‹С… РёР· С„Р°Р№Р»Р°!\n");
+			free(arr);
+			fclose(file);
+			return NULL;
+		}
+	}
+
+	fclose(file);
+	*size = count;
+	return arr;
+}
+
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ СЂСѓС‡РЅРѕРіРѕ РІРІРѕРґР° РјР°СЃСЃРёРІР°
+int* manualInput(int* size) {
+	printf("Р’РІРµРґРёС‚Рµ РєРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ РјР°СЃСЃРёРІР°: ");
+	scanf_s("%d", size);
+	if (*size <= 0) {
+		printf("РќРµРІРµСЂРЅС‹Р№ СЂР°Р·РјРµСЂ РјР°СЃСЃРёРІР°!\n");
+		return NULL;
+	}
+
+	int* arr = (int*)malloc(*size * sizeof(int));
+	if (arr == NULL) {
+		printf("РћС€РёР±РєР° РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё!\n");
+		return NULL;
+	}
+
+	printf("Р’РІРµРґРёС‚Рµ %d СЌР»РµРјРµРЅС‚РѕРІ РјР°СЃСЃРёРІР°:\n", *size);
+	for (int i = 0; i < *size; i++) {
+		printf("Р­Р»РµРјРµРЅС‚ %d: ", i + 1);
+		scanf_s("%d", &arr[i]);
+	}
+
+	return arr;
+}
+
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РіРµРЅРµСЂР°С†РёРё СЃР»СѓС‡Р°Р№РЅРѕРіРѕ РјР°СЃСЃРёРІР° СЃ РґРёР°РїР°Р·РѕРЅРѕРј Р·РЅР°С‡РµРЅРёР№
+int* generateRandomArray(int size, int minVal, int maxVal) {
+	int* arr = (int*)malloc(size * sizeof(int));
+	if (arr == NULL) {
+		printf("РћС€РёР±РєР° РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё!\n");
+		return NULL;
+	}
+
+	for (int i = 0; i < size; i++) {
+		arr[i] = rand() % (maxVal - minVal + 1) + minVal;
+	}
+
+	return arr;
+}
+
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РІС‹РІРѕРґР° РјР°СЃСЃРёРІР° РЅР° СЌРєСЂР°РЅ (СЃ РѕРіСЂР°РЅРёС‡РµРЅРёРµРј РґРѕ 100 СЌР»РµРјРµРЅС‚РѕРІ)
+void printArray(int arr[], int n) {
+	printf("РњР°СЃСЃРёРІ (%d СЌР»РµРјРµРЅС‚РѕРІ):\n", n);
+	int limit = (n > 100) ? 100 : n;
+
+	for (int i = 0; i < limit; i++) {
+		printf("%d ", arr[i]);
+		if ((i + 1) % 10 == 0) printf("\n");
+	}
+
+	if (n > 100) {
+		printf("\n... (РїРѕРєР°Р·Р°РЅС‹ РїРµСЂРІС‹Рµ 100 СЌР»РµРјРµРЅС‚РѕРІ РёР· %d)\n", n);
+	}
+	printf("\n");
+}
+
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РІС‹РІРѕРґР° РјРµРЅСЋ (СЃ РїСЂРѕСЃС‚С‹РјРё СЃРёРјРІРѕР»Р°РјРё)
+void printMenu() {
+	printf("\n===============================================\n");
+	printf("|          РњР•РќР® РџР РћР“Р РђРњРњР«                     |\n");
+	printf("===============================================\n");
+	printf("| 1 - РЎРѕСЂС‚РёСЂРѕРІРєР° СЃР»СѓС‡Р°Р№РЅРѕРіРѕ РјР°СЃСЃРёРІР°           |\n");
+	printf("| 2 - РЎРѕСЂС‚РёСЂРѕРІРєР° РІСЂСѓС‡РЅСѓСЋ РІРІРµРґРµРЅРЅРѕРіРѕ           |\n");
+	printf("| 3 - РЎРѕСЂС‚РёСЂРѕРІРєР° РґР°РЅРЅС‹С… РёР· С„Р°Р№Р»Р°              |\n");
+	printf("| 4 - Р—Р°РїРёСЃР°С‚СЊ РјР°СЃСЃРёРІ РІ CSV С„Р°Р№Р»              |\n");
+	printf("| ESC - Р’С‹С…РѕРґ РёР· РїСЂРѕРіСЂР°РјРјС‹                    |\n");
+	printf("===============================================\n\n");
+	printf("Р’С‹Р±РµСЂРёС‚Рµ РґРµР№СЃС‚РІРёРµ: ");
+}
+
 int main() {
 	setlocale(LC_ALL, "Russian");
 	srand((unsigned int)time(NULL));
-	FILE* f;
-	int size;
+
 	int* array = NULL;
+	int size = 0;
 	char ch;
 
 	do {
 		system("cls");
-		printf("МЕНЮ:\n");
-		printf("1 - Сортировка случайных значений по возрастанию\n");
-		printf("2 - Сортировка случайных значений по убыванию\n");
-		printf("3 - Сортировка возрастающих значений по убыванию\n");
-		printf("4 - Сортировка возрастающих значений по возрастанию\n");
-		printf("ESC - выход\n");
+		printMenu();
 		ch = _getch();
 
 		clock_t start, stop;
 		double time;
-		long count;
+		long count = 0;
 
 		switch (ch) {
 		case '1': {
 			system("cls");
-			printf("Введите количество элементов массива: ");
-			if (scanf("%d", &size) != 1 || size <= 0) {
-				printf("Неверный размер массива!\n");
+			printf("================================================\n");
+			printf("|     Р“Р•РќР•Р РђР¦РРЇ РЎР›РЈР§РђР™РќРћР“Рћ РњРђРЎРЎРР’Рђ             |\n");
+			printf("================================================\n");
+
+			int minVal, maxVal;
+			printf("Р’РІРµРґРёС‚Рµ РєРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ: ");
+			scanf_s("%d", &size);
+			printf("Р’РІРµРґРёС‚Рµ РјРёРЅРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ: ");
+			scanf_s("%d", &minVal);
+			printf("Р’РІРµРґРёС‚Рµ РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ: ");
+			scanf_s("%d", &maxVal);
+
+			if (size <= 0 || minVal > maxVal) {
+				printf("РќРµРІРµСЂРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РјР°СЃСЃРёРІР°!\n");
 				system("pause");
 				break;
 			}
 
-			array = (int*)malloc(size * sizeof(int));
+			if (array != NULL) free(array);
+			array = generateRandomArray(size, minVal, maxVal);
 			if (array == NULL) {
-				printf("Ошибка выделения памяти!\n");
 				system("pause");
 				break;
 			}
 
-			printf("\nМассив случайных чисел: 'input.txt'\n");
-			f = fopen("input.txt", "w");
-			if (f == NULL) {
-				printf("Ошибка открытия файла!\n");
-				free(array);
-				system("pause");
-				break;
-			}
+			printf("\nРЎРіРµРЅРµСЂРёСЂРѕРІР°РЅРЅС‹Р№ РјР°СЃСЃРёРІ:\n");
+			printArray(array, size);
 
-			for (int i = 0; i < size; i++) {
-				array[i] = rand() - RAND_MAX / 2;
-				fprintf(f, "%d ", array[i]);
-			}
-			fclose(f);
-
-			printf("Отсортированный массив: 'output.txt'\n");
-			f = fopen("output.txt", "w");
-			if (f == NULL) {
-				printf("Ошибка открытия файла!\n");
-				free(array);
-				system("pause");
-				break;
-			}
+			printf("\nР’С‹Р±РµСЂРёС‚Рµ РЅР°РїСЂР°РІР»РµРЅРёРµ СЃРѕСЂС‚РёСЂРѕРІРєРё:\n");
+			printf("1 - РџРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ\n");
+			printf("2 - РџРѕ СѓР±С‹РІР°РЅРёСЋ\n");
+			char sortChoice = _getch();
 
 			start = clock();
 			count = 0;
 			radixSort(array, size, &count);
+
+			if (sortChoice == '2') {
+				// Р РµРІРµСЂСЃ РјР°СЃСЃРёРІР° РґР»СЏ СЃРѕСЂС‚РёСЂРѕРІРєРё РїРѕ СѓР±С‹РІР°РЅРёСЋ
+				for (int i = 0; i < size / 2; i++) {
+					int temp = array[i];
+					array[i] = array[size - i - 1];
+					array[size - i - 1] = temp;
+					count++;
+				}
+			}
+
 			stop = clock();
 
-			for (int i = 0; i < size; i++) {
-				fprintf(f, "%d ", array[i]);
-			}
-			fclose(f);
+			printf("\nРћС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹Р№ РјР°СЃСЃРёРІ:\n");
+			printArray(array, size);
 
 			time = (double)(stop - start) / CLOCKS_PER_SEC;
-			printf("\nВремя выполнения сортировки: %.3lf сек\n", time);
-			printf("Количество операций: %ld\n", count);
+			printf("\nР’СЂРµРјСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ СЃРѕСЂС‚РёСЂРѕРІРєРё: %.3lf СЃРµРє\n", time);
+			printf("РљРѕР»РёС‡РµСЃС‚РІРѕ РѕРїРµСЂР°С†РёР№: %ld\n", count);
 
-			free(array);
+			writeCSV("output.csv", array, size);
+			printf("Р РµР·СѓР»СЊС‚Р°С‚ СЃРѕС…СЂР°РЅРµРЅ РІ output.csv\n");
+
 			system("pause");
 			break;
 		}
 		case '2': {
-			// Сортировка случайных значений по убыванию
 			system("cls");
-			printf("Введите количество элементов массива: ");
-			if (scanf_s("%d", &size) != 1 || size <= 0) {
-				printf("Неверный размер массива!\n");
-				system("pause");
-				break;
-			}
+			printf("================================================\n");
+			printf("|        Р РЈР§РќРћР™ Р’Р’РћР” РњРђРЎРЎРР’Рђ                   |\n");
+			printf("================================================\n");
 
-			array = (int*)malloc(size * sizeof(int));
+			if (array != NULL) free(array);
+			array = manualInput(&size);
 			if (array == NULL) {
-				printf("Ошибка выделения памяти!\n");
 				system("pause");
 				break;
 			}
 
-			printf("\nМассив случайных чисел: 'input.txt'\n");
-			if (fopen_s(&f, "input.txt", "w") != 0) {
-				printf("Ошибка открытия файла!\n");
-				free(array);
-				system("pause");
-				break;
-			}
+			printf("\nР’РІРµРґРµРЅРЅС‹Р№ РјР°СЃСЃРёРІ:\n");
+			printArray(array, size);
 
-			for (int i = 0; i < size; i++) {
-				array[i] = rand() - rand();
-				fprintf(f, "%d ", array[i]);
-			}
-			fclose(f);
-
-			printf("Отсортированный массив: 'output.txt'\n");
-			if (fopen_s(&f, "output.txt", "w") != 0) {
-				printf("Ошибка открытия файла!\n");
-				free(array);
-				system("pause");
-				break;
-			}
+			printf("\nР’С‹Р±РµСЂРёС‚Рµ РЅР°РїСЂР°РІР»РµРЅРёРµ СЃРѕСЂС‚РёСЂРѕРІРєРё:\n");
+			printf("1 - РџРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ\n");
+			printf("2 - РџРѕ СѓР±С‹РІР°РЅРёСЋ\n");
+			char sortChoice = _getch();
 
 			start = clock();
 			count = 0;
 			radixSort(array, size, &count);
 
-			// Для сортировки по убыванию просто перевернем массив
-			for (int i = 0; i < size / 2; i++) {
-				int temp = array[i];
-				array[i] = array[size - i - 1];
-				array[size - i - 1] = temp;
-				count++;
+			if (sortChoice == '2') {
+				// Р РµРІРµСЂСЃ РјР°СЃСЃРёРІР° РґР»СЏ СЃРѕСЂС‚РёСЂРѕРІРєРё РїРѕ СѓР±С‹РІР°РЅРёСЋ
+				for (int i = 0; i < size / 2; i++) {
+					int temp = array[i];
+					array[i] = array[size - i - 1];
+					array[size - i - 1] = temp;
+					count++;
+				}
 			}
 
 			stop = clock();
 
-			for (int i = 0; i < size; i++) {
-				fprintf(f, "%d ", array[i]);
-			}
-			fclose(f);
+			printf("\nРћС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹Р№ РјР°СЃСЃРёРІ:\n");
+			printArray(array, size);
 
 			time = (double)(stop - start) / CLOCKS_PER_SEC;
-			printf("\nВремя выполнения сортировки: %.3lf сек\n", time);
-			printf("Количество операций: %ld\n", count);
+			printf("\nР’СЂРµРјСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ СЃРѕСЂС‚РёСЂРѕРІРєРё: %.3lf СЃРµРє\n", time);
+			printf("РљРѕР»РёС‡РµСЃС‚РІРѕ РѕРїРµСЂР°С†РёР№: %ld\n", count);
 
-			free(array);
+			writeCSV("output.csv", array, size);
+			printf("Р РµР·СѓР»СЊС‚Р°С‚ СЃРѕС…СЂР°РЅРµРЅ РІ output.csv\n");
+
 			system("pause");
 			break;
 		}
 		case '3': {
-			// Сортировка возрастающих значений по убыванию
 			system("cls");
-			printf("Введите количество элементов массива: ");
-			if (scanf_s("%d", &size) != 1 || size <= 0) {
-				printf("Неверный размер массива!\n");
-				system("pause");
-				break;
-			}
+			printf("================================================\n");
+			printf("|        Р§РўР•РќРР• РњРђРЎРЎРР’Рђ РР— Р¤РђР™Р›Рђ               |\n");
+			printf("================================================\n");
 
-			array = (int*)malloc(size * sizeof(int));
+			char filename[100];
+			printf("Р’РІРµРґРёС‚Рµ РёРјСЏ С„Р°Р№Р»Р° РґР»СЏ С‡С‚РµРЅРёСЏ (РЅР°РїСЂРёРјРµСЂ, input.csv): ");
+			scanf_s("%s", filename);
+
+			if (array != NULL) free(array);
+			array = readCSV(filename, &size);
 			if (array == NULL) {
-				printf("Ошибка выделения памяти!\n");
 				system("pause");
 				break;
 			}
 
-			printf("\nМассив возрастающих чисел: 'input.txt'\n");
-			if (fopen_s(&f, "input.txt", "w") != 0) {
-				printf("Ошибка открытия файла!\n");
-				free(array);
-				system("pause");
-				break;
-			}
+			printf("\nРџСЂРѕС‡РёС‚Р°РЅРЅС‹Р№ РјР°СЃСЃРёРІ:\n");
+			printArray(array, size);
 
-			// Генерация возрастающей последовательности
-			array[0] = rand() % 10000;
-			for (int i = 1; i < size; i++) {
-				array[i] = array[i - 1] + (rand() % 100) + 100; // Минимальный шаг 100
-			}
-
-			// Запись в файл
-			for (int i = 0; i < size; i++) {
-				fprintf(f, "%d ", array[i]);
-			}
-			fclose(f);
-
-			printf("Отсортированный массив: 'output.txt'\n");
-			if (fopen_s(&f, "output.txt", "w") != 0) {
-				printf("Ошибка открытия файла!\n");
-				free(array);
-				system("pause");
-				break;
-			}
+			printf("\nР’С‹Р±РµСЂРёС‚Рµ РЅР°РїСЂР°РІР»РµРЅРёРµ СЃРѕСЂС‚РёСЂРѕРІРєРё:\n");
+			printf("1 - РџРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ\n");
+			printf("2 - РџРѕ СѓР±С‹РІР°РЅРёСЋ\n");
+			char sortChoice = _getch();
 
 			start = clock();
 			count = 0;
 			radixSort(array, size, &count);
 
-			// Реверс массива для сортировки по убыванию
-			for (int i = 0; i < size / 2; i++) {
-				int temp = array[i];
-				array[i] = array[size - i - 1];
-				array[size - i - 1] = temp;
-				count++;
+			if (sortChoice == '2') {
+				// Р РµРІРµСЂСЃ РјР°СЃСЃРёРІР° РґР»СЏ СЃРѕСЂС‚РёСЂРѕРІРєРё РїРѕ СѓР±С‹РІР°РЅРёСЋ
+				for (int i = 0; i < size / 2; i++) {
+					int temp = array[i];
+					array[i] = array[size - i - 1];
+					array[size - i - 1] = temp;
+					count++;
+				}
 			}
 
 			stop = clock();
 
-			// Запись отсортированных данных
-			for (int i = 0; i < size; i++) {
-				fprintf(f, "%d ", array[i]);
-			}
-			fclose(f);
+			printf("\nРћС‚СЃРѕСЂС‚РёСЂРѕРІР°РЅРЅС‹Р№ РјР°СЃСЃРёРІ:\n");
+			printArray(array, size);
 
 			time = (double)(stop - start) / CLOCKS_PER_SEC;
-			printf("\nВремя выполнения сортировки: %.3lf сек\n", time);
-			printf("Количество операций: %ld\n", count);
+			printf("\nР’СЂРµРјСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ СЃРѕСЂС‚РёСЂРѕРІРєРё: %.3lf СЃРµРє\n", time);
+			printf("РљРѕР»РёС‡РµСЃС‚РІРѕ РѕРїРµСЂР°С†РёР№: %ld\n", count);
 
-			free(array);
+			writeCSV("output.csv", array, size);
+			printf("Р РµР·СѓР»СЊС‚Р°С‚ СЃРѕС…СЂР°РЅРµРЅ РІ output.csv\n");
+
 			system("pause");
 			break;
 		}
-
 		case '4': {
-			// Сортировка возрастающих значений по возрастанию
 			system("cls");
-			printf("Введите количество элементов массива: ");
-			if (scanf_s("%d", &size) != 1 || size <= 0) {
-				printf("Неверный размер массива!\n");
+			printf("================================================\n");
+			printf("|        РЎРћРҐР РђРќР•РќРР• РњРђРЎРЎРР’Рђ Р’ Р¤РђР™Р›             |\n");
+			printf("================================================\n");
+
+			if (array == NULL || size == 0) {
+				printf("РќРµС‚ РґР°РЅРЅС‹С… РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ!\n");
 				system("pause");
 				break;
 			}
 
-			array = (int*)malloc(size * sizeof(int));
-			if (array == NULL) {
-				printf("Ошибка выделения памяти!\n");
-				system("pause");
-				break;
-			}
+			char filename[100];
+			printf("Р’РІРµРґРёС‚Рµ РёРјСЏ С„Р°Р№Р»Р° РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ (РЅР°РїСЂРёРјРµСЂ, data.csv): ");
+			scanf_s("%s", filename);
 
-			printf("\nМассив возрастающих чисел: 'input.txt'\n");
-			if (fopen_s(&f, "input.txt", "w") != 0) {
-				printf("Ошибка открытия файла!\n");
-				free(array);
-				system("pause");
-				break;
-			}
+			writeCSV(filename, array, size);
+			printf("РњР°СЃСЃРёРІ СѓСЃРїРµС€РЅРѕ СЃРѕС…СЂР°РЅРµРЅ РІ С„Р°Р№Р» %s\n", filename);
 
-			// Генерация возрастающей последовательности
-			array[0] = rand() % 10000;
-			for (int i = 1; i < size; i++) {
-				array[i] = array[i - 1] + (rand() % 100) + 100; // Минимальный шаг 100
-			}
-
-			// Запись в файл
-			for (int i = 0; i < size; i++) {
-				fprintf(f, "%d ", array[i]);
-			}
-			fclose(f);
-
-			printf("Отсортированный массив: 'output.txt'\n");
-			if (fopen_s(&f, "output.txt", "w") != 0) {
-				printf("Ошибка открытия файла!\n");
-				free(array);
-				system("pause");
-				break;
-			}
-
-			start = clock();
-			count = 0;
-			radixSort(array, size, &count);
-			stop = clock();
-
-			// Запись отсортированных данных
-			for (int i = 0; i < size; i++) {
-				fprintf(f, "%d ", array[i]);
-			}
-			fclose(f);
-
-			time = (double)(stop - start) / CLOCKS_PER_SEC;
-			printf("\nВремя выполнения сортировки: %.3lf сек\n", time);
-			printf("Количество операций: %ld\n", count);
-
-			free(array);
 			system("pause");
 			break;
 		}
+		case 27: // ESC
+			break;
+		default:
+			printf("\nРќРµРІРµСЂРЅС‹Р№ РІС‹Р±РѕСЂ! РџРѕРїСЂРѕР±СѓР№С‚Рµ СЃРЅРѕРІР°.\n");
+			system("pause");
+			break;
 		}
 	} while (ch != 27);
 
+	if (array != NULL) free(array);
 	return 0;
 }
