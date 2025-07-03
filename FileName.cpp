@@ -29,18 +29,18 @@ void countSort(int arr[], int n, int exp, long* count) {
 	int countDigits[10] = { 0 };
 	int i;
 
-	// 1. Подсчет количества каждой цифры
+	// Подсчет количества каждой цифры
 	for (i = 0; i < n; i++) {
 		int digit = (abs(arr[i]) / exp) % 10;
 		countDigits[digit]++;
 	}
 
-	// 2. Преобразование countDigits в позиции
+	// Преобразование countDigits в позиции
 	for (i = 1; i < 10; i++) {
 		countDigits[i] += countDigits[i - 1];
 	}
 
-	// 3. Построение выходного массива
+	// Построение выходного массива
 	for (i = n - 1; i >= 0; i--) {
 		int digit = (abs(arr[i]) / exp) % 10;
 		int pos = --countDigits[digit];
@@ -55,7 +55,7 @@ void countSort(int arr[], int n, int exp, long* count) {
 		(*count)++;
 	}
 
-	// 4. Копирование обратно в исходный массив
+	// Копирование обратно в исходный массив
 	for (i = 0; i < n; i++) {
 		arr[i] = output[i];
 	}
