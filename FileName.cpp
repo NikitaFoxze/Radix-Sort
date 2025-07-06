@@ -406,7 +406,7 @@ int main() {
 		case 27: // ESC
 			break;
 		default:
-			printf("\nНеверный выбор! Попробуйте снова.\n");
+			printf("\nВыбор не верен!\n");
 			system("pause");
 			break;
 		}
