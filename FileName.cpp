@@ -215,9 +215,9 @@ int main() {
 		switch (ch) {
 		case '1': {
 			system("cls");
-			printf("================================================\n");
-			printf("|     ГЕНЕРАЦИЯ СЛУЧАЙНОГО МАССИВА             |\n");
-			printf("================================================\n");
+			printf("=================================================\n");
+			printf("|     ГЕНЕРАЦИЯ СЛУЧАЙНОГО МАССИВА              |\n");
+			printf("=================================================\n");
 
 			int minVal, maxVal;
 			printf("Введите количество элементов: ");
@@ -240,10 +240,10 @@ int main() {
 				break;
 			}
 
-			printf("\nСгенерированный массив:\n");
+			printf("\nСгенерированный массив: \n");
 			printArray(array, size);
 
-			printf("\nВыберите направление сортировки:\n");
+			printf("\nВыберите направление сортировки: \n");
 			printf("1 - По возрастанию\n");
 			printf("2 - По убыванию\n");
 			char sortChoice = _getch();
@@ -264,7 +264,7 @@ int main() {
 
 			stop = clock();
 
-			printf("\nОтсортированный массив:\n");
+			printf("\nОтсортированный массив: \n");
 			printArray(array, size);
 
 			time = (double)(stop - start) / CLOCKS_PER_SEC;
@@ -290,10 +290,10 @@ int main() {
 				break;
 			}
 
-			printf("\nВведенный массив:\n");
+			printf("\nВведенный массив: \n");
 			printArray(array, size);
 
-			printf("\nВыберите направление сортировки:\n");
+			printf("\nВыберите направление сортировки: \n");
 			printf("1 - По возрастанию\n");
 			printf("2 - По убыванию\n");
 			char sortChoice = _getch();
@@ -314,7 +314,7 @@ int main() {
 
 			stop = clock();
 
-			printf("\nОтсортированный массив:\n");
+			printf("\nОтсортированный массив: \n");
 			printArray(array, size);
 
 			time = (double)(stop - start) / CLOCKS_PER_SEC;
@@ -344,10 +344,10 @@ int main() {
 				break;
 			}
 
-			printf("\nПрочитанный массив:\n");
+			printf("\nПрочитанный массив: \n");
 			printArray(array, size);
 
-			printf("\nВыберите направление сортировки:\n");
+			printf("\nВыберите направление сортировки: \n");
 			printf("1 - По возрастанию\n");
 			printf("2 - По убыванию\n");
 			char sortChoice = _getch();
@@ -368,7 +368,7 @@ int main() {
 
 			stop = clock();
 
-			printf("\nОтсортированный массив:\n");
+			printf("\nОтсортированный массив: \n");
 			printArray(array, size);
 
 			time = (double)(stop - start) / CLOCKS_PER_SEC;
